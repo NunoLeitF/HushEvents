@@ -1,87 +1,6 @@
-/* =========================================================
-   TEMPORARY EVENT DATA
-   This will eventually come from the backend.
-   ========================================================= */
+const API_BASE = "http://localhost:8080/api";
 
-const event = {
-    active: true,
-
-    name: "Hush Event",
-
-    location:
-        "Crystal • Balmung • The Goblet W12 P34",
-
-    startAt:
-        "2026-10-24T21:00:00+01:00",
-
-    backgroundUrl:
-        "assets/example-background.webp",
-
-    logoUrl:
-        "assets/example-logo.webp",
-
-    guideImages: [
-        "assets/guide/guide-1.webp",
-        "assets/guide/guide-2.webp",
-        "assets/guide/guide-3.webp"
-    ],
-
-    participants: [
-        {
-            name: "Moonlight Atelier",
-            type: "vendor",
-            label: "Vendor",
-
-            image:
-                "assets/participants/vendor-1.webp",
-
-            links: [
-                {
-                    label: "Carrd",
-                    url: "https://example.com"
-                }
-            ]
-        },
-
-        {
-            name: "Aurelia Vale",
-            type: "rper",
-            label: "RPer",
-
-            image:
-                "assets/participants/rper-1.webp",
-
-            links: []
-        }
-    ],
-
-    staff: [
-        {
-            name: "Harpocrates",
-            role: "Event Organizer",
-
-            image:
-                "assets/staff/staff-1.webp",
-
-            links: [
-                {
-                    label: "Carrd",
-                    url: "https://example.com"
-                }
-            ]
-        },
-
-        {
-            name: "Mika",
-            role: "Security",
-
-            image:
-                "assets/staff/staff-2.webp",
-
-            links: []
-        }
-    ]
-};
+let currentEvent = null;
 
 
 /* =========================================================
@@ -94,14 +13,42 @@ document.addEventListener(
 );
 
 
-function initializePage() {
+async function initializePage() {
 
-    if (!event || !event.active) {
+    try {
+
+        const response = await fetch(
+            `${API_BASE}/events/current`
+        );
+
+
+        if (response.status === 204) {
+            showNoEvent();
+            return;
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Could not load event: ${response.status}`
+            );
+        }
+
+
+        currentEvent = await response.json();
+
+        showEvent(currentEvent);
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load Hush event:",
+            error
+        );
+
         showNoEvent();
-        return;
     }
-
-    showEvent();
 
 }
 
@@ -119,7 +66,6 @@ function showNoEvent() {
     document
         .getElementById("no-event")
         .hidden = false;
-
 }
 
 
@@ -127,7 +73,7 @@ function showNoEvent() {
    EVENT
    ========================================================= */
 
-function showEvent() {
+function showEvent(event) {
 
     document
         .getElementById("no-event")
@@ -138,21 +84,55 @@ function showEvent() {
         .hidden = false;
 
 
-    document.documentElement.style.setProperty(
-        "--event-background",
-        `url("${event.backgroundUrl}")`
-    );
+    /* =====================================================
+       BACKGROUND
+       ===================================================== */
 
+    if (event.backgroundImageUrl) {
+
+        document.documentElement.style.setProperty(
+            "--event-background",
+            `url("${event.backgroundImageUrl}")`
+        );
+
+    } else {
+
+        document.documentElement.style.setProperty(
+            "--event-background",
+            "none"
+        );
+    }
+
+
+    /* =====================================================
+       LOGO
+       ===================================================== */
 
     const logo =
         document.getElementById("event-logo");
 
-    logo.src =
-        event.logoUrl;
 
-    logo.alt =
-        `${event.name} logo`;
+    if (event.logoImageUrl) {
 
+        logo.src =
+            event.logoImageUrl;
+
+        logo.alt =
+            `${event.name} logo`;
+
+        logo.hidden =
+            false;
+
+    } else {
+
+        logo.hidden =
+            true;
+    }
+
+
+    /* =====================================================
+       LOCATION
+       ===================================================== */
 
     document
         .getElementById("event-location")
@@ -160,321 +140,103 @@ function showEvent() {
         event.location;
 
 
-    renderGuide();
-
-    renderParticipants();
-
-    renderStaff();
-
-    setupFilters();
+    /* =====================================================
+       COUNTDOWN
+       ===================================================== */
 
     startCountdown(
         event.startAt
     );
 
+
+    /*
+     * These sections will be populated once we add
+     * their backend models.
+     */
+
+    prepareFutureSections();
 }
 
 
 /* =========================================================
-   GUIDE
+   FUTURE SECTIONS
    ========================================================= */
 
-function renderGuide() {
+function prepareFutureSections() {
 
-    const grid =
-        document.getElementById(
-            "guide-grid"
-        );
+    /*
+     * For now our API only contains the basic Event.
+     *
+     * Hide these sections until Guide Images,
+     * Vendors/RPers and Staff have been implemented.
+     */
 
-    grid.innerHTML = "";
+    setSectionVisible(
+        "guide",
+        false
+    );
 
+    setSectionVisible(
+        "participants",
+        false
+    );
 
-    for (
-        const imageUrl
-        of event.guideImages
-    ) {
-
-        const wrapper =
-            document.createElement(
-                "div"
-            );
-
-        wrapper.className =
-            "guide-image";
-
-
-        const image =
-            document.createElement(
-                "img"
-            );
-
-        image.src =
-            imageUrl;
-
-        image.alt =
-            "Event guide image";
+    setSectionVisible(
+        "staff",
+        false
+    );
 
 
-        wrapper.appendChild(
-            image
-        );
+    setNavVisible(
+        "#guide",
+        false
+    );
 
-        grid.appendChild(
-            wrapper
-        );
-    }
+    setNavVisible(
+        "#participants",
+        false
+    );
 
+    setNavVisible(
+        "#staff",
+        false
+    );
 }
 
 
-/* =========================================================
-   PARTICIPANTS
-   ========================================================= */
-
-function renderParticipants(
-    filter = "all"
+function setSectionVisible(
+    id,
+    visible
 ) {
 
-    const grid =
-        document.getElementById(
-            "participant-grid"
-        );
+    const section =
+        document.getElementById(id);
 
-    grid.innerHTML = "";
-
-
-    const participants =
-        event.participants.filter(
-            participant =>
-                filter === "all" ||
-                participant.type === filter
-        );
-
-
-    for (
-        const participant
-        of participants
-    ) {
-
-        grid.appendChild(
-            createPersonCard(
-                participant.name,
-                participant.label,
-                participant.image,
-                participant.links
-            )
-        );
+    if (!section) {
+        return;
     }
 
+    section.hidden =
+        !visible;
 }
 
 
-/* =========================================================
-   STAFF
-   ========================================================= */
-
-function renderStaff() {
-
-    const grid =
-        document.getElementById(
-            "staff-grid"
-        );
-
-    grid.innerHTML = "";
-
-
-    for (
-        const staff
-        of event.staff
-    ) {
-
-        grid.appendChild(
-            createPersonCard(
-                staff.name,
-                staff.role,
-                staff.image,
-                staff.links
-            )
-        );
-    }
-
-}
-
-
-/* =========================================================
-   PERSON CARD
-   ========================================================= */
-
-function createPersonCard(
-    name,
-    type,
-    imageUrl,
-    links = []
+function setNavVisible(
+    href,
+    visible
 ) {
 
-    const card =
-        document.createElement(
-            "article"
+    const link =
+        document.querySelector(
+            `.event-nav a[href="${href}"]`
         );
 
-    card.className =
-        "person-card";
-
-
-    const image =
-        document.createElement(
-            "img"
-        );
-
-    image.src =
-        imageUrl;
-
-    image.alt =
-        name;
-
-
-    const info =
-        document.createElement(
-            "div"
-        );
-
-    info.className =
-        "person-card-info";
-
-
-    const title =
-        document.createElement(
-            "h3"
-        );
-
-    title.textContent =
-        name;
-
-
-    const typeElement =
-        document.createElement(
-            "p"
-        );
-
-    typeElement.className =
-        "person-type";
-
-    typeElement.textContent =
-        type;
-
-
-    info.appendChild(
-        title
-    );
-
-    info.appendChild(
-        typeElement
-    );
-
-
-    if (
-        links &&
-        links.length > 0
-    ) {
-
-        const linkContainer =
-            document.createElement(
-                "div"
-            );
-
-        linkContainer.className =
-            "person-links";
-
-
-        for (
-            const link
-            of links
-        ) {
-
-            const anchor =
-                document.createElement(
-                    "a"
-                );
-
-            anchor.href =
-                link.url;
-
-            anchor.textContent =
-                link.label;
-
-            anchor.target =
-                "_blank";
-
-            anchor.rel =
-                "noopener noreferrer";
-
-
-            linkContainer.appendChild(
-                anchor
-            );
-        }
-
-
-        info.appendChild(
-            linkContainer
-        );
+    if (!link) {
+        return;
     }
 
-
-    card.appendChild(
-        image
-    );
-
-    card.appendChild(
-        info
-    );
-
-
-    return card;
-}
-
-
-/* =========================================================
-   FILTERS
-   ========================================================= */
-
-function setupFilters() {
-
-    const buttons =
-        document.querySelectorAll(
-            ".filter-button"
-        );
-
-
-    buttons.forEach(
-        button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    buttons.forEach(
-                        other =>
-                            other.classList.remove(
-                                "active"
-                            )
-                    );
-
-
-                    button.classList.add(
-                        "active"
-                    );
-
-
-                    renderParticipants(
-                        button.dataset.filter
-                    );
-                }
-            );
-
-        }
-    );
-
+    link.hidden =
+        !visible;
 }
 
 
@@ -497,9 +259,7 @@ function startCountdown(
             Date.now();
 
 
-        if (
-            difference <= 0
-        ) {
+        if (difference <= 0) {
 
             difference = 0;
         }
@@ -573,7 +333,6 @@ function startCountdown(
         update,
         1000
     );
-
 }
 
 
@@ -590,5 +349,4 @@ function setCountdownValue(
                 2,
                 "0"
             );
-
 }
