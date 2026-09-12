@@ -1,0 +1,694 @@
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: #ffffff;
+
+    background: #111111;
+}
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+:root {
+
+    --page-width: 1050px;
+
+    --nav-bg:
+        rgba(15, 15, 20, 0.90);
+
+    --home-bg:
+        rgba(62, 37, 91, 0.84);
+
+    --guide-bg:
+        rgba(27, 75, 82, 0.84);
+
+    --participants-bg:
+        rgba(76, 42, 76, 0.84);
+
+    --staff-bg:
+        rgba(47, 52, 86, 0.84);
+
+    --card-bg:
+        rgba(10, 10, 15, 0.68);
+
+    --border:
+        rgba(255, 255, 255, 0.15);
+
+    --soft-text:
+        rgba(255, 255, 255, 0.72);
+}
+
+
+/* =========================================================
+   NO EVENT
+   ========================================================= */
+
+.no-event {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 2rem;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #26202e,
+            #0d0c10 70%
+        );
+}
+
+
+.no-event-box {
+    text-align: center;
+
+    padding:
+        clamp(2rem, 5vw, 4rem)
+        clamp(2rem, 8vw, 7rem);
+
+    border-radius: 28px;
+
+    background:
+        rgba(25, 20, 30, 0.90);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.12);
+
+    box-shadow:
+        0 20px 70px rgba(0, 0, 0, 0.45);
+}
+
+
+.no-event h1 {
+    margin: 0;
+
+    font-size:
+        clamp(2.8rem, 8vw, 6rem);
+
+    font-weight: 600;
+}
+
+
+.no-event p {
+    margin:
+        1rem 0 0;
+
+    font-size:
+        clamp(1rem, 2vw, 1.2rem);
+
+    color: var(--soft-text);
+}
+
+
+/* =========================================================
+   EVENT PAGE
+   ========================================================= */
+
+.event-page {
+    min-height: 100vh;
+
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.24),
+            rgba(0, 0, 0, 0.42)
+        ),
+        var(--event-background);
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.event-nav {
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: clamp(
+        0.7rem,
+        3vw,
+        2.5rem
+    );
+
+    padding:
+        1rem
+        1.25rem;
+
+    background:
+        var(--nav-bg);
+
+    border-bottom:
+        1px solid var(--border);
+
+    backdrop-filter:
+        blur(16px);
+
+    -webkit-backdrop-filter:
+        blur(16px);
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.30);
+}
+
+
+.event-nav a {
+    color: white;
+
+    text-decoration: none;
+
+    font-size:
+        clamp(0.8rem, 2vw, 1rem);
+
+    letter-spacing: 0.04em;
+
+    opacity: 0.78;
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.event-nav a:hover {
+    opacity: 1;
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* =========================================================
+   PAGE CONTENT
+   ========================================================= */
+
+.page-content {
+    width:
+        min(
+            var(--page-width),
+            calc(100% - 2rem)
+        );
+
+    margin:
+        0 auto;
+
+    padding:
+        3rem 0 6rem;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3rem;
+}
+
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+
+.event-section {
+    scroll-margin-top: 90px;
+
+    padding:
+        clamp(2rem, 5vw, 4rem);
+
+    border-radius: 30px;
+
+    border:
+        1px solid var(--border);
+
+    backdrop-filter:
+        blur(14px);
+
+    -webkit-backdrop-filter:
+        blur(14px);
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.32);
+}
+
+
+.event-section h2 {
+    margin:
+        0 0 2rem;
+
+    text-align: center;
+
+    font-size:
+        clamp(2rem, 5vw, 3.4rem);
+
+    font-weight: 600;
+}
+
+
+.home-section {
+    background:
+        var(--home-bg);
+}
+
+
+.guide-section {
+    background:
+        var(--guide-bg);
+}
+
+
+.participants-section {
+    background:
+        var(--participants-bg);
+}
+
+
+.staff-section {
+    background:
+        var(--staff-bg);
+}
+
+
+/* =========================================================
+   HOME
+   ========================================================= */
+
+.home-section {
+    min-height:
+        calc(100vh - 150px);
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+
+.event-logo-wrapper {
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+
+    margin-bottom: 2.5rem;
+}
+
+
+.event-logo {
+    display: block;
+
+    width:
+        min(
+            700px,
+            92%
+        );
+
+    max-height: 380px;
+
+    object-fit: contain;
+}
+
+
+.event-location {
+    margin-bottom: 2.5rem;
+}
+
+
+.section-label {
+    display: block;
+
+    margin-bottom: 0.4rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.18em;
+
+    font-size: 0.72rem;
+
+    opacity: 0.60;
+}
+
+
+.event-location p {
+    margin: 0;
+
+    font-size:
+        clamp(1.1rem, 3vw, 1.5rem);
+}
+
+
+/* =========================================================
+   COUNTDOWN
+   ========================================================= */
+
+.countdown {
+    display: flex;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap:
+        clamp(1rem, 4vw, 3rem);
+}
+
+
+.countdown-item {
+    min-width: 90px;
+}
+
+
+.countdown-item strong {
+    display: block;
+
+    font-size:
+        clamp(2rem, 6vw, 4rem);
+
+    line-height: 1;
+}
+
+
+.countdown-item span {
+    display: block;
+
+    margin-top: 0.6rem;
+
+    font-size: 0.75rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.14em;
+
+    opacity: 0.65;
+}
+
+
+/* =========================================================
+   GUIDE
+   ========================================================= */
+
+.guide-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 1rem;
+}
+
+
+.guide-image {
+    overflow: hidden;
+
+    border-radius: 18px;
+
+    background:
+        rgba(0, 0, 0, 0.25);
+
+    border:
+        1px solid var(--border);
+}
+
+
+.guide-image img {
+    display: block;
+
+    width: 100%;
+
+    aspect-ratio: 16 / 9;
+
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   PARTICIPANT FILTERS
+   ========================================================= */
+
+.participant-filters {
+    display: flex;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 0.7rem;
+
+    margin-bottom: 2rem;
+}
+
+
+.filter-button {
+    border:
+        1px solid rgba(255, 255, 255, 0.18);
+
+    border-radius: 999px;
+
+    padding:
+        0.65rem
+        1.25rem;
+
+    background:
+        rgba(0, 0, 0, 0.24);
+
+    color: white;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.filter-button:hover,
+.filter-button.active {
+    background:
+        rgba(255, 255, 255, 0.16);
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.card-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(210px, 1fr)
+        );
+
+    gap: 1.25rem;
+}
+
+
+.person-card {
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background:
+        var(--card-bg);
+
+    border:
+        1px solid var(--border);
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.22);
+}
+
+
+.person-card img {
+    display: block;
+
+    width: 100%;
+
+    aspect-ratio: 1 / 1;
+
+    object-fit: cover;
+}
+
+
+.person-card-info {
+    padding:
+        1.2rem;
+}
+
+
+.person-card h3 {
+    margin: 0;
+
+    font-size: 1.15rem;
+}
+
+
+.person-type {
+    margin:
+        0.4rem 0 0;
+
+    text-transform: uppercase;
+
+    font-size: 0.72rem;
+
+    letter-spacing: 0.12em;
+
+    color: var(--soft-text);
+}
+
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+.person-links {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 0.5rem;
+
+    margin-top: 1rem;
+}
+
+
+.person-links a {
+    display: inline-block;
+
+    padding:
+        0.5rem
+        0.8rem;
+
+    border-radius: 999px;
+
+    background:
+        rgba(255, 255, 255, 0.10);
+
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 0.78rem;
+}
+
+
+.person-links a:hover {
+    background:
+        rgba(255, 255, 255, 0.18);
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .event-nav {
+        justify-content: flex-start;
+
+        overflow-x: auto;
+    }
+
+
+    .event-nav a {
+        flex: 0 0 auto;
+    }
+
+
+    .page-content {
+        width:
+            calc(100% - 1rem);
+
+        padding-top: 1rem;
+
+        gap: 1rem;
+    }
+
+
+    .event-section {
+        border-radius: 22px;
+
+        padding:
+            2rem 1.2rem;
+    }
+
+
+    .home-section {
+        min-height:
+            calc(100vh - 100px);
+    }
+
+
+    .guide-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .card-grid {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+
+        gap: 0.75rem;
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .card-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+}

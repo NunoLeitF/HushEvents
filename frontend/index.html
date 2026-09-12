@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Hush Events</title>
+
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+
+    <!-- =====================================================
+         NO EVENT
+         ===================================================== -->
+
+    <main id="no-event" class="no-event" hidden>
+
+        <div class="no-event-box">
+            <h1>Hush Events</h1>
+            <p>No events in planning</p>
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         ACTIVE EVENT
+         ===================================================== -->
+
+    <main id="event-page" class="event-page" hidden>
+
+        <!-- =========================
+             NAVIGATION
+             ========================= -->
+
+        <nav class="event-nav">
+
+            <a href="#home">
+                Home
+            </a>
+
+            <a href="#guide">
+                Guide
+            </a>
+
+            <a href="#participants">
+                Vendors &amp; RPers
+            </a>
+
+            <a href="#staff">
+                Staff
+            </a>
+
+        </nav>
+
+
+        <div class="page-content">
+
+            <!-- =========================
+                 HOME
+                 ========================= -->
+
+            <section
+                id="home"
+                class="event-section home-section"
+            >
+
+                <div class="event-logo-wrapper">
+
+                    <img
+                        id="event-logo"
+                        class="event-logo"
+                        src=""
+                        alt="Event logo"
+                    >
+
+                </div>
+
+
+                <div class="event-location">
+
+                    <span class="section-label">
+                        Location
+                    </span>
+
+                    <p id="event-location"></p>
+
+                </div>
+
+
+                <div class="countdown">
+
+                    <div class="countdown-item">
+                        <strong id="countdown-days">00</strong>
+                        <span>Days</span>
+                    </div>
+
+                    <div class="countdown-item">
+                        <strong id="countdown-hours">00</strong>
+                        <span>Hours</span>
+                    </div>
+
+                    <div class="countdown-item">
+                        <strong id="countdown-minutes">00</strong>
+                        <span>Minutes</span>
+                    </div>
+
+                    <div class="countdown-item">
+                        <strong id="countdown-seconds">00</strong>
+                        <span>Seconds</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 GUIDE
+                 ========================= -->
+
+            <section
+                id="guide"
+                class="event-section guide-section"
+            >
+
+                <h2>Event Guide</h2>
+
+                <div
+                    id="guide-grid"
+                    class="guide-grid"
+                ></div>
+
+            </section>
+
+
+            <!-- =========================
+                 VENDORS / RPERS
+                 ========================= -->
+
+            <section
+                id="participants"
+                class="event-section participants-section"
+            >
+
+                <h2>Vendors &amp; RPers</h2>
+
+
+                <div
+                    id="participant-filters"
+                    class="participant-filters"
+                >
+
+                    <button
+                        class="filter-button active"
+                        data-filter="all"
+                    >
+                        All
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        data-filter="vendor"
+                    >
+                        Vendors
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        data-filter="rper"
+                    >
+                        RPers
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="participant-grid"
+                    class="card-grid"
+                ></div>
+
+            </section>
+
+
+            <!-- =========================
+                 STAFF
+                 ========================= -->
+
+            <section
+                id="staff"
+                class="event-section staff-section"
+            >
+
+                <h2>Staff</h2>
+
+                <div
+                    id="staff-grid"
+                    class="card-grid"
+                ></div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <script src="js/index.js"></script>
+
+</body>
+</html>
