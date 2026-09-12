@@ -3,10 +3,10 @@
    ========================================================= */
 
 const API_BASE =
-    "http://localhost:8080/api";
+    "https://hushevents-github-io.onrender.com/api";
 
 const BACKEND_ORIGIN =
-    "http://localhost:8080";
+    "https://hushevents-github-io.onrender.com";
 
 
 /* =========================================================
