@@ -1,6 +1,26 @@
-const API_BASE = "http://localhost:8080/api";
+/* =========================================================
+   CONFIG
+   ========================================================= */
 
-let currentEvent = null;
+const API_BASE =
+    "http://localhost:8080/api";
+
+const BACKEND_ORIGIN =
+    "http://localhost:8080";
+
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let currentEvent =
+    null;
+
+let countdownInterval =
+    null;
+
+let currentParticipantFilter =
+    "all";
 
 
 /* =========================================================
@@ -15,15 +35,31 @@ document.addEventListener(
 
 async function initializePage() {
 
+    console.log(
+        "Hush public page loaded"
+    );
+
+
     try {
 
-        const response = await fetch(
-            `${API_BASE}/events/current`
+        const response =
+            await fetch(
+                `${API_BASE}/events/current`
+            );
+
+
+        console.log(
+            "Event API status:",
+            response.status
         );
 
 
-        if (response.status === 204) {
+        if (
+            response.status === 204
+        ) {
+
             showNoEvent();
+
             return;
         }
 
@@ -31,25 +67,35 @@ async function initializePage() {
         if (!response.ok) {
 
             throw new Error(
-                `Could not load event: ${response.status}`
+                `Backend returned ${response.status}`
             );
         }
 
 
-        currentEvent = await response.json();
+        currentEvent =
+            await response.json();
 
-        showEvent(currentEvent);
+
+        console.log(
+            "Current event:",
+            currentEvent
+        );
+
+
+        showEvent(
+            currentEvent
+        );
 
     } catch (error) {
 
         console.error(
-            "Failed to load Hush event:",
+            "Could not load Hush event:",
             error
         );
 
+
         showNoEvent();
     }
-
 }
 
 
@@ -59,13 +105,33 @@ async function initializePage() {
 
 function showNoEvent() {
 
-    document
-        .getElementById("event-page")
-        .hidden = true;
+    stopCountdown();
 
-    document
-        .getElementById("no-event")
-        .hidden = false;
+
+    const eventPage =
+        document.getElementById(
+            "event-page"
+        );
+
+
+    const noEvent =
+        document.getElementById(
+            "no-event"
+        );
+
+
+    if (eventPage) {
+
+        eventPage.hidden =
+            true;
+    }
+
+
+    if (noEvent) {
+
+        noEvent.hidden =
+            false;
+    }
 }
 
 
@@ -73,170 +139,867 @@ function showNoEvent() {
    EVENT
    ========================================================= */
 
-function showEvent(event) {
+function showEvent(
+    event
+) {
 
-    document
-        .getElementById("no-event")
-        .hidden = true;
-
-    document
-        .getElementById("event-page")
-        .hidden = false;
-
-
-    /* =====================================================
-       BACKGROUND
-       ===================================================== */
-
-    if (event.backgroundImageUrl) {
-
-        document.documentElement.style.setProperty(
-            "--event-background",
-            `url("${event.backgroundImageUrl}")`
+    const eventPage =
+        document.getElementById(
+            "event-page"
         );
 
-    } else {
 
-        document.documentElement.style.setProperty(
-            "--event-background",
-            "none"
+    const noEvent =
+        document.getElementById(
+            "no-event"
         );
-    }
 
 
-    /* =====================================================
-       LOGO
-       ===================================================== */
+    if (noEvent) {
 
-    const logo =
-        document.getElementById("event-logo");
-
-
-    if (event.logoImageUrl) {
-
-        logo.src =
-            event.logoImageUrl;
-
-        logo.alt =
-            `${event.name} logo`;
-
-        logo.hidden =
-            false;
-
-    } else {
-
-        logo.hidden =
+        noEvent.hidden =
             true;
     }
 
 
-    /* =====================================================
-       LOCATION
-       ===================================================== */
+    if (eventPage) {
 
-    document
-        .getElementById("event-location")
-        .textContent =
-        event.location;
+        eventPage.hidden =
+            false;
+    }
 
 
-    /* =====================================================
-       COUNTDOWN
-       ===================================================== */
+    renderBackground(
+        event
+    );
+
+
+    renderLogo(
+        event
+    );
+
+
+    renderLocation(
+        event
+    );
+
 
     startCountdown(
         event.startAt
     );
 
 
-    /*
-     * These sections will be populated once we add
-     * their backend models.
-     */
+    renderGuide(
+        event.guideImages || []
+    );
 
-    prepareFutureSections();
+
+    renderParticipants(
+        event.participants || []
+    );
+
+
+    renderStaff(
+        event.staff || []
+    );
+
+
+    setupParticipantFilters();
 }
 
 
 /* =========================================================
-   FUTURE SECTIONS
+   BACKGROUND
    ========================================================= */
 
-function prepareFutureSections() {
+function renderBackground(
+    event
+) {
 
-    /*
-     * For now our API only contains the basic Event.
-     *
-     * Hide these sections until Guide Images,
-     * Vendors/RPers and Staff have been implemented.
-     */
+    if (
+        event.backgroundImageUrl
+    ) {
 
-    setSectionVisible(
-        "guide",
-        false
-    );
-
-    setSectionVisible(
-        "participants",
-        false
-    );
-
-    setSectionVisible(
-        "staff",
-        false
-    );
+        const url =
+            resolveBackendUrl(
+                event.backgroundImageUrl
+            );
 
 
-    setNavVisible(
-        "#guide",
-        false
-    );
+        document.documentElement
+            .style
+            .setProperty(
+                "--event-background",
+                `url("${url}")`
+            );
 
-    setNavVisible(
-        "#participants",
-        false
-    );
+    } else {
 
-    setNavVisible(
-        "#staff",
-        false
-    );
+        document.documentElement
+            .style
+            .setProperty(
+                "--event-background",
+                "none"
+            );
+    }
 }
 
 
-function setSectionVisible(
-    id,
-    visible
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+function renderLogo(
+    event
+) {
+
+    const logo =
+        document.getElementById(
+            "event-logo"
+        );
+
+
+    const name =
+        document.getElementById(
+            "event-name"
+        );
+
+
+    if (
+        event.logoImageUrl
+    ) {
+
+        if (logo) {
+
+            logo.src =
+                resolveBackendUrl(
+                    event.logoImageUrl
+                );
+
+
+            logo.alt =
+                `${event.name} logo`;
+
+
+            logo.hidden =
+                false;
+        }
+
+
+        if (name) {
+
+            name.hidden =
+                true;
+        }
+
+    } else {
+
+        if (logo) {
+
+            logo.hidden =
+                true;
+        }
+
+
+        if (name) {
+
+            name.textContent =
+                event.name;
+
+
+            name.hidden =
+                false;
+        }
+    }
+}
+
+
+/* =========================================================
+   LOCATION
+   ========================================================= */
+
+function renderLocation(
+    event
+) {
+
+    const location =
+        document.getElementById(
+            "event-location"
+        );
+
+
+    if (!location) {
+
+        return;
+    }
+
+
+    location.textContent =
+        event.location || "";
+}
+
+
+/* =========================================================
+   GUIDE
+   ========================================================= */
+
+function renderGuide(
+    guideImages
 ) {
 
     const section =
-        document.getElementById(id);
+        document.getElementById(
+            "guide"
+        );
 
-    if (!section) {
+
+    const nav =
+        document.getElementById(
+            "nav-guide"
+        );
+
+
+    const grid =
+        document.getElementById(
+            "guide-grid"
+        );
+
+
+    console.log(
+        "Guide images:",
+        guideImages
+    );
+
+
+    if (!grid) {
+
+        console.error(
+            "Could not find #guide-grid"
+        );
+
         return;
     }
 
-    section.hidden =
-        !visible;
+
+    grid.innerHTML =
+        "";
+
+
+    if (
+        guideImages.length === 0
+    ) {
+
+        if (section) {
+
+            section.hidden =
+                true;
+        }
+
+
+        if (nav) {
+
+            nav.hidden =
+                true;
+        }
+
+
+        return;
+    }
+
+
+    if (section) {
+
+        section.hidden =
+            false;
+    }
+
+
+    if (nav) {
+
+        nav.hidden =
+            false;
+    }
+
+
+    for (
+        const guide
+        of guideImages
+    ) {
+
+        const wrapper =
+            document.createElement(
+                "div"
+            );
+
+
+        wrapper.className =
+            "guide-image";
+
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+
+        image.src =
+            resolveBackendUrl(
+                guide.imageUrl
+            );
+
+
+        image.alt =
+            "Event guide image";
+
+
+        wrapper.appendChild(
+            image
+        );
+
+
+        grid.appendChild(
+            wrapper
+        );
+    }
 }
 
 
-function setNavVisible(
-    href,
-    visible
+/* =========================================================
+   PARTICIPANTS
+   ========================================================= */
+
+function renderParticipants(
+    participants
 ) {
 
-    const link =
-        document.querySelector(
-            `.event-nav a[href="${href}"]`
+    const section =
+        document.getElementById(
+            "participants"
         );
 
-    if (!link) {
+
+    const nav =
+        document.getElementById(
+            "nav-participants"
+        );
+
+
+    console.log(
+        "Participants:",
+        participants
+    );
+
+
+    if (
+        participants.length === 0
+    ) {
+
+        if (section) {
+
+            section.hidden =
+                true;
+        }
+
+
+        if (nav) {
+
+            nav.hidden =
+                true;
+        }
+
+
         return;
     }
 
-    link.hidden =
-        !visible;
+
+    if (section) {
+
+        section.hidden =
+            false;
+    }
+
+
+    if (nav) {
+
+        nav.hidden =
+            false;
+    }
+
+
+    renderParticipantCards(
+        participants,
+        currentParticipantFilter
+    );
+}
+
+
+/* =========================================================
+   PARTICIPANT CARDS
+   ========================================================= */
+
+function renderParticipantCards(
+    participants,
+    filter
+) {
+
+    const grid =
+        document.getElementById(
+            "participant-grid"
+        );
+
+
+    if (!grid) {
+
+        console.error(
+            "Could not find #participant-grid"
+        );
+
+        return;
+    }
+
+
+    grid.innerHTML =
+        "";
+
+
+    const filtered =
+        participants.filter(
+            participant => {
+
+                if (
+                    filter === "all"
+                ) {
+
+                    return true;
+                }
+
+
+                const type =
+                    String(
+                        participant.type || ""
+                    )
+                        .toLowerCase();
+
+
+                return type === filter;
+            }
+        );
+
+
+    for (
+        const participant
+        of filtered
+    ) {
+
+        let subtitle;
+
+
+        if (
+            participant.type === "RPER"
+        ) {
+
+            subtitle =
+                "RPer";
+
+        } else {
+
+            subtitle =
+                "Vendor";
+        }
+
+
+        if (
+            participant.category
+        ) {
+
+            subtitle +=
+                ` · ${participant.category}`;
+        }
+
+
+        grid.appendChild(
+
+            createPersonCard(
+
+                participant.name,
+
+                subtitle,
+
+                participant.imageUrl,
+
+                linksFromObject(
+                    participant
+                )
+            )
+        );
+    }
+}
+
+
+/* =========================================================
+   PARTICIPANT FILTERS
+   ========================================================= */
+
+function setupParticipantFilters() {
+
+    const buttons =
+        document.querySelectorAll(
+            ".filter-button"
+        );
+
+
+    buttons.forEach(
+        button => {
+
+            button.onclick =
+                () => {
+
+                    buttons.forEach(
+                        other => {
+
+                            other
+                                .classList
+                                .remove(
+                                    "active"
+                                );
+                        }
+                    );
+
+
+                    button
+                        .classList
+                        .add(
+                            "active"
+                        );
+
+
+                    currentParticipantFilter =
+                        button.dataset.filter;
+
+
+                    renderParticipantCards(
+
+                        currentEvent
+                            ?.participants ||
+                        [],
+
+                        currentParticipantFilter
+                    );
+                };
+        }
+    );
+}
+
+
+/* =========================================================
+   STAFF
+   ========================================================= */
+
+function renderStaff(
+    staffMembers
+) {
+
+    const section =
+        document.getElementById(
+            "staff"
+        );
+
+
+    const nav =
+        document.getElementById(
+            "nav-staff"
+        );
+
+
+    const grid =
+        document.getElementById(
+            "staff-grid"
+        );
+
+
+    console.log(
+        "Staff:",
+        staffMembers
+    );
+
+
+    if (!grid) {
+
+        console.error(
+            "Could not find #staff-grid"
+        );
+
+        return;
+    }
+
+
+    grid.innerHTML =
+        "";
+
+
+    if (
+        staffMembers.length === 0
+    ) {
+
+        if (section) {
+
+            section.hidden =
+                true;
+        }
+
+
+        if (nav) {
+
+            nav.hidden =
+                true;
+        }
+
+
+        return;
+    }
+
+
+    if (section) {
+
+        section.hidden =
+            false;
+    }
+
+
+    if (nav) {
+
+        nav.hidden =
+            false;
+    }
+
+
+    for (
+        const staff
+        of staffMembers
+    ) {
+
+        grid.appendChild(
+
+            createPersonCard(
+
+                staff.name,
+
+                staff.role,
+
+                staff.imageUrl,
+
+                linksFromObject(
+                    staff
+                )
+            )
+        );
+    }
+}
+
+
+/* =========================================================
+   PERSON CARD
+   ========================================================= */
+
+function createPersonCard(
+    name,
+    subtitle,
+    imageUrl,
+    links
+) {
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+
+    card.className =
+        "person-card";
+
+
+    const image =
+        document.createElement(
+            "img"
+        );
+
+
+    image.src =
+        resolveBackendUrl(
+            imageUrl
+        );
+
+
+    image.alt =
+        name;
+
+
+    const info =
+        document.createElement(
+            "div"
+        );
+
+
+    info.className =
+        "person-card-info";
+
+
+    const title =
+        document.createElement(
+            "h3"
+        );
+
+
+    title.textContent =
+        name;
+
+
+    const typeElement =
+        document.createElement(
+            "p"
+        );
+
+
+    typeElement.className =
+        "person-type";
+
+
+    typeElement.textContent =
+        subtitle;
+
+
+    info.appendChild(
+        title
+    );
+
+
+    info.appendChild(
+        typeElement
+    );
+
+
+    if (
+        links.length > 0
+    ) {
+
+        const linkContainer =
+            document.createElement(
+                "div"
+            );
+
+
+        linkContainer.className =
+            "person-links";
+
+
+        for (
+            const link
+            of links
+        ) {
+
+            const anchor =
+                document.createElement(
+                    "a"
+                );
+
+
+            anchor.href =
+                link.url;
+
+
+            anchor.textContent =
+                link.label;
+
+
+            anchor.target =
+                "_blank";
+
+
+            anchor.rel =
+                "noopener noreferrer";
+
+
+            linkContainer.appendChild(
+                anchor
+            );
+        }
+
+
+        info.appendChild(
+            linkContainer
+        );
+    }
+
+
+    card.appendChild(
+        image
+    );
+
+
+    card.appendChild(
+        info
+    );
+
+
+    return card;
+}
+
+
+/* =========================================================
+   OPTIONAL LINKS
+   ========================================================= */
+
+function linksFromObject(
+    object
+) {
+
+    const links =
+        [];
+
+
+    for (
+        let index = 1;
+        index <= 3;
+        index++
+    ) {
+
+        const label =
+            object[
+                `link${index}Label`
+            ];
+
+
+        const url =
+            object[
+                `link${index}Url`
+            ];
+
+
+        /*
+         * A URL without a custom label is still useful.
+         * Give it a generic "Link" label.
+         */
+
+        if (url) {
+
+            links.push({
+
+                label:
+                    label ||
+                    (
+                        index === 1
+                            ? "Link"
+                            : `Link ${index}`
+                    ),
+
+                url:
+                    url
+            });
+        }
+    }
+
+
+    return links;
 }
 
 
@@ -248,8 +1011,13 @@ function startCountdown(
     startAt
 ) {
 
+    stopCountdown();
+
+
     const target =
-        new Date(startAt);
+        new Date(
+            startAt
+        );
 
 
     function update() {
@@ -259,9 +1027,12 @@ function startCountdown(
             Date.now();
 
 
-        if (difference <= 0) {
+        if (
+            difference < 0
+        ) {
 
-            difference = 0;
+            difference =
+                0;
         }
 
 
@@ -273,7 +1044,8 @@ function startCountdown(
 
 
         difference -=
-            days * 86400000;
+            days *
+            86400000;
 
 
         const hours =
@@ -284,7 +1056,8 @@ function startCountdown(
 
 
         difference -=
-            hours * 3600000;
+            hours *
+            3600000;
 
 
         const minutes =
@@ -295,7 +1068,8 @@ function startCountdown(
 
 
         difference -=
-            minutes * 60000;
+            minutes *
+            60000;
 
 
         const seconds =
@@ -310,15 +1084,18 @@ function startCountdown(
             days
         );
 
+
         setCountdownValue(
             "countdown-hours",
             hours
         );
 
+
         setCountdownValue(
             "countdown-minutes",
             minutes
         );
+
 
         setCountdownValue(
             "countdown-seconds",
@@ -329,24 +1106,103 @@ function startCountdown(
 
     update();
 
-    setInterval(
-        update,
-        1000
-    );
+
+    countdownInterval =
+        setInterval(
+            update,
+            1000
+        );
 }
 
+
+/* =========================================================
+   STOP COUNTDOWN
+   ========================================================= */
+
+function stopCountdown() {
+
+    if (
+        countdownInterval === null
+    ) {
+
+        return;
+    }
+
+
+    clearInterval(
+        countdownInterval
+    );
+
+
+    countdownInterval =
+        null;
+}
+
+
+/* =========================================================
+   SET COUNTDOWN VALUE
+   ========================================================= */
 
 function setCountdownValue(
     id,
     value
 ) {
 
-    document
-        .getElementById(id)
-        .textContent =
-        String(value)
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (!element) {
+
+        return;
+    }
+
+
+    element.textContent =
+        String(
+            value
+        )
             .padStart(
                 2,
                 "0"
             );
+}
+
+
+/* =========================================================
+   BACKEND URL
+   ========================================================= */
+
+function resolveBackendUrl(
+    url
+) {
+
+    if (!url) {
+
+        return "";
+    }
+
+
+    if (
+        url.startsWith(
+            "http://"
+        ) ||
+        url.startsWith(
+            "https://"
+        ) ||
+        url.startsWith(
+            "data:"
+        ) ||
+        url.startsWith(
+            "blob:"
+        )
+    ) {
+
+        return url;
+    }
+
+
+    return `${BACKEND_ORIGIN}${url}`;
 }

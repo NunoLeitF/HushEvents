@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Hush Admin</title>
+
+    <link
+        rel="stylesheet"
+        href="admin.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<header class="admin-header">
+
+    <div class="admin-brand">
+
+        <strong>Hush</strong>
+
+        <span>Admin</span>
+
+    </div>
+
+
+    <a
+        href="../index.html"
+        target="_blank"
+    >
+        View site
+    </a>
+
+</header>
+
+
+<main class="admin-layout">
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="event-sidebar">
+
+        <div class="sidebar-heading">
+
+            <h1>Events</h1>
+
+
+            <button
+                id="new-event-button"
+                type="button"
+            >
+                + New
+            </button>
+
+        </div>
+
+
+        <div
+            id="event-list"
+            class="event-list"
+        ></div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         EDITOR
+         ===================================================== -->
+
+    <section class="editor">
+
+
+        <div
+            id="empty-editor"
+            class="empty-editor"
+        >
+
+            Select an event or create a new one.
+
+        </div>
+
+
+        <form
+            id="event-form"
+            hidden
+        >
+
+
+            <!-- =============================================
+                 HEADING
+                 ============================================= -->
+
+            <div class="editor-heading">
+
+                <div>
+
+                    <span class="eyebrow">
+                        Event
+                    </span>
+
+
+                    <h2 id="editor-title">
+                        New Event
+                    </h2>
+
+                </div>
+
+
+                <label class="publish-control">
+
+                    <input
+                        id="published"
+                        type="checkbox"
+                    >
+
+                    <span>
+                        Published
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <!-- =============================================
+                 INFORMATION
+                 ============================================= -->
+
+            <section class="form-section">
+
+                <h3>Information</h3>
+
+
+                <div class="field">
+
+                    <label for="name">
+                        Event name
+                    </label>
+
+                    <input
+                        id="name"
+                        type="text"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="location">
+                        Location
+                    </label>
+
+                    <input
+                        id="location"
+                        type="text"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="two-column">
+
+                    <div class="field">
+
+                        <label for="start-at">
+                            Starts
+                        </label>
+
+                        <input
+                            id="start-at"
+                            type="datetime-local"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="end-at">
+                            Ends
+                        </label>
+
+                        <input
+                            id="end-at"
+                            type="datetime-local"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =============================================
+                 APPEARANCE
+                 ============================================= -->
+
+            <section class="form-section">
+
+                <h3>Appearance</h3>
+
+
+                <div class="image-field">
+
+                    <div class="image-field-heading">
+
+                        <div>
+
+                            <label for="background-file">
+                                Background image
+                            </label>
+
+                            <p>
+                                Used behind the whole event page.
+                            </p>
+
+                        </div>
+
+
+                        <input
+                            id="background-file"
+                            type="file"
+                            accept="image/*"
+                        >
+
+                    </div>
+
+
+                    <div
+                        id="background-preview"
+                        class="image-preview background-preview"
+                    >
+                        <span>
+                            No background selected
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="image-field">
+
+                    <div class="image-field-heading">
+
+                        <div>
+
+                            <label for="logo-file">
+                                Event logo
+                            </label>
+
+                            <p>
+                                Appears at the top of the page.
+                            </p>
+
+                        </div>
+
+
+                        <input
+                            id="logo-file"
+                            type="file"
+                            accept="image/*"
+                        >
+
+                    </div>
+
+
+                    <div
+                        id="logo-preview"
+                        class="image-preview logo-preview"
+                    >
+                        <span>
+                            No logo selected
+                        </span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =============================================
+                 SAVE BASIC EVENT
+                 ============================================= -->
+
+            <div class="basic-save-row">
+
+                <span
+                    id="save-status"
+                    class="save-status"
+                ></span>
+
+
+                <button
+                    class="save-button"
+                    type="submit"
+                >
+                    Save event
+                </button>
+
+            </div>
+
+
+            <!-- =============================================
+                 SAVE FIRST MESSAGE
+                 ============================================= -->
+
+            <div
+                id="save-first-message"
+                class="save-first-message"
+            >
+
+                Save the event first to add guide images,
+                Vendors / RPers and staff.
+
+            </div>
+
+
+            <!-- =============================================
+                 RELATED CONTENT
+                 ============================================= -->
+
+            <div
+                id="related-content"
+                hidden
+            >
+
+
+                <!-- =========================================
+                     GUIDE
+                     ========================================= -->
+
+                <section class="form-section content-section">
+
+                    <div class="section-heading-row">
+
+                        <div>
+
+                            <h3>
+                                Guide Images
+                            </h3>
+
+                            <p>
+                                Images that help visitors navigate the venue
+                                and find the different stalls.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="add-image-row">
+
+                        <input
+                            id="guide-file"
+                            type="file"
+                            accept="image/*"
+                        >
+
+
+                        <button
+                            id="add-guide-button"
+                            type="button"
+                            class="secondary-button"
+                        >
+                            Add image
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="guide-list"
+                        class="guide-admin-grid"
+                    ></div>
+
+                </section>
+
+
+                <!-- =========================================
+                     VENDORS / RPERS
+                     ========================================= -->
+
+                <section class="form-section content-section">
+
+                    <div class="section-heading-row">
+
+                        <div>
+
+                            <h3>
+                                Vendors &amp; RPers
+                            </h3>
+
+                            <p>
+                                People vending or roleplaying at the event.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="sub-editor">
+
+
+                        <input
+                            id="participant-id"
+                            type="hidden"
+                        >
+
+
+                        <input
+                            id="participant-current-image"
+                            type="hidden"
+                        >
+
+
+                        <div class="two-column">
+
+
+                            <div class="field">
+
+                                <label for="participant-name">
+                                    Name
+                                </label>
+
+                                <input
+                                    id="participant-name"
+                                    type="text"
+                                >
+
+                            </div>
+
+
+                            <div class="field">
+
+                                <label for="participant-type">
+                                    Type
+                                </label>
+
+                                <select id="participant-type">
+
+                                    <option value="VENDOR">
+                                        Vendor
+                                    </option>
+
+                                    <option value="RPER">
+                                        RPer
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="participant-category">
+                                Category
+                            </label>
+
+                            <input
+                                id="participant-category"
+                                type="text"
+                                placeholder="Art, Food, Merch..."
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="participant-file">
+                                Image
+                            </label>
+
+                            <input
+                                id="participant-file"
+                                type="file"
+                                accept="image/*"
+                            >
+
+                        </div>
+
+
+                        <div class="links-editor">
+
+                            <span class="mini-heading">
+                                Optional links
+                            </span>
+
+
+                            <div class="link-row">
+
+                                <input
+                                    id="participant-link1-label"
+                                    type="text"
+                                    placeholder="Label"
+                                >
+
+                                <input
+                                    id="participant-link1-url"
+                                    type="url"
+                                    placeholder="https://..."
+                                >
+
+                            </div>
+
+
+                            <div class="link-row">
+
+                                <input
+                                    id="participant-link2-label"
+                                    type="text"
+                                    placeholder="Label"
+                                >
+
+                                <input
+                                    id="participant-link2-url"
+                                    type="url"
+                                    placeholder="https://..."
+                                >
+
+                            </div>
+
+
+                            <div class="link-row">
+
+                                <input
+                                    id="participant-link3-label"
+                                    type="text"
+                                    placeholder="Label"
+                                >
+
+                                <input
+                                    id="participant-link3-url"
+                                    type="url"
+                                    placeholder="https://..."
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="sub-editor-actions">
+
+                            <button
+                                id="cancel-participant-edit"
+                                type="button"
+                                class="plain-button"
+                                hidden
+                            >
+                                Cancel edit
+                            </button>
+
+
+                            <button
+                                id="save-participant-button"
+                                type="button"
+                                class="secondary-button"
+                            >
+                                Add Vendor / RPer
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="participant-list"
+                        class="admin-card-list"
+                    ></div>
+
+                </section>
+
+
+                <!-- =========================================
+                     STAFF
+                     ========================================= -->
+
+                <section class="form-section content-section">
+
+                    <div class="section-heading-row">
+
+                        <div>
+
+                            <h3>
+                                Staff
+                            </h3>
+
+                            <p>
+                                People actively working for the event.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="sub-editor">
+
+
+                        <input
+                            id="staff-id"
+                            type="hidden"
+                        >
+
+
+                        <input
+                            id="staff-current-image"
+                            type="hidden"
+                        >
+
+
+                        <div class="two-column">
+
+
+                            <div class="field">
+
+                                <label for="staff-name">
+                                    Name
+                                </label>
+
+                                <input
+                                    id="staff-name"
+                                    type="text"
+                                >
+
+                            </div>
+
+
+                            <div class="field">
+
+                                <label for="staff-role">
+                                    Role
+                                </label>
+
+                                <input
+                                    id="staff-role"
+                                    type="text"
+                                    placeholder="Host, Security, DJ..."
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="staff-file">
+                                Image
+                            </label>
+
+                            <input
+                                id="staff-file"
+                                type="file"
+                                accept="image/*"
+                            >
+
+                        </div>
+
+
+                        <div class="links-editor">
+
+                            <span class="mini-heading">
+                                Optional links
+                            </span>
+
+
+                            <div class="link-row">
+
+                                <input
+                                    id="staff-link1-label"
+                                    type="text"
+                                    placeholder="Label"
+                                >
+
+                                <input
+                                    id="staff-link1-url"
+                                    type="url"
+                                    placeholder="https://..."
+                                >
+
+                            </div>
+
+
+                            <div class="link-row">
+
+                                <input
+                                    id="staff-link2-label"
+                                    type="text"
+                                    placeholder="Label"
+                                >
+
+                                <input
+                                    id="staff-link2-url"
+                                    type="url"
+                                    placeholder="https://..."
+                                >
+
+                            </div>
+
+
+                            <div class="link-row">
+
+                                <input
+                                    id="staff-link3-label"
+                                    type="text"
+                                    placeholder="Label"
+                                >
+
+                                <input
+                                    id="staff-link3-url"
+                                    type="url"
+                                    placeholder="https://..."
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="sub-editor-actions">
+
+                            <button
+                                id="cancel-staff-edit"
+                                type="button"
+                                class="plain-button"
+                                hidden
+                            >
+                                Cancel edit
+                            </button>
+
+
+                            <button
+                                id="save-staff-button"
+                                type="button"
+                                class="secondary-button"
+                            >
+                                Add staff member
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="staff-list"
+                        class="admin-card-list"
+                    ></div>
+
+                </section>
+
+            </div>
+
+
+            <!-- =============================================
+                 DELETE EVENT
+                 ============================================= -->
+
+            <footer class="editor-actions">
+
+                <button
+                    id="delete-button"
+                    class="delete-button"
+                    type="button"
+                    hidden
+                >
+                    Delete event
+                </button>
+
+            </footer>
+
+        </form>
+
+    </section>
+
+</main>
+
+
+<script src="admin.js"></script>
+
+
+</body>
+</html>

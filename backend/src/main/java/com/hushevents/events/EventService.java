@@ -1,7 +1,15 @@
 package com.hushevents.events;
 
+import com.hushevents.guides.GuideImageDTO;
+import com.hushevents.guides.GuideImageRepository;
+import com.hushevents.participants.EventParticipantRepository;
+import com.hushevents.participants.ParticipantDTO;
+import com.hushevents.staff.StaffDTO;
+import com.hushevents.staff.StaffMemberRepository;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
@@ -13,32 +21,99 @@ public class EventService {
 
     private final EventRepository repository;
 
+    private final GuideImageRepository guideRepository;
+
+    private final EventParticipantRepository participantRepository;
+
+    private final StaffMemberRepository staffRepository;
+
 
     public EventService(
-            EventRepository repository
+            EventRepository repository,
+            GuideImageRepository guideRepository,
+            EventParticipantRepository participantRepository,
+            StaffMemberRepository staffRepository
     ) {
-        this.repository = repository;
+
+        this.repository =
+                repository;
+
+        this.guideRepository =
+                guideRepository;
+
+        this.participantRepository =
+                participantRepository;
+
+        this.staffRepository =
+                staffRepository;
     }
 
 
-    // =====================================================
-    // PUBLIC
-    // =====================================================
+    /* =====================================================
+       PUBLIC
+       ===================================================== */
 
-    public Optional<EventPublicDTO>
-    getCurrentEvent() {
+    public Optional<EventPublicDTO> getCurrentEvent() {
 
         return repository
                 .findFirstByPublishedTrueAndEndAtAfterOrderByStartAtAsc(
                         Instant.now()
                 )
-                .map(EventPublicDTO::from);
+                .map(
+                        event ->
+                                new EventPublicDTO(
+
+                                        event.getId(),
+
+                                        event.getName(),
+
+                                        event.getLocation(),
+
+                                        event.getStartAt(),
+
+                                        event.getEndAt(),
+
+                                        event.getBackgroundImageUrl(),
+
+                                        event.getLogoImageUrl(),
+
+                                        guideRepository
+                                                .findAllByEventIdOrderBySortOrderAsc(
+                                                        event.getId()
+                                                )
+                                                .stream()
+                                                .map(
+                                                        GuideImageDTO::from
+                                                )
+                                                .toList(),
+
+                                        participantRepository
+                                                .findAllByEventIdOrderBySortOrderAsc(
+                                                        event.getId()
+                                                )
+                                                .stream()
+                                                .map(
+                                                        ParticipantDTO::from
+                                                )
+                                                .toList(),
+
+                                        staffRepository
+                                                .findAllByEventIdOrderBySortOrderAsc(
+                                                        event.getId()
+                                                )
+                                                .stream()
+                                                .map(
+                                                        StaffDTO::from
+                                                )
+                                                .toList()
+                                )
+                );
     }
 
 
-    // =====================================================
-    // ADMIN
-    // =====================================================
+    /* =====================================================
+       ADMIN
+       ===================================================== */
 
     public List<Event> getAllEvents() {
 
@@ -67,17 +142,24 @@ public class EventService {
             EventRequestDTO request
     ) {
 
-        validateDates(request);
+        validateDates(
+                request
+        );
+
 
         Event event =
                 new Event();
+
 
         applyRequest(
                 event,
                 request
         );
 
-        return repository.save(event);
+
+        return repository.save(
+                event
+        );
     }
 
 
@@ -86,20 +168,28 @@ public class EventService {
             EventRequestDTO request
     ) {
 
-        validateDates(request);
+        validateDates(
+                request
+        );
+
 
         Event event =
                 getEvent(id);
+
 
         applyRequest(
                 event,
                 request
         );
 
-        return repository.save(event);
+
+        return repository.save(
+                event
+        );
     }
 
 
+    @Transactional
     public void deleteEvent(
             Long id
     ) {
@@ -107,13 +197,34 @@ public class EventService {
         Event event =
                 getEvent(id);
 
-        repository.delete(event);
+
+        guideRepository
+                .deleteAllByEventId(
+                        id
+                );
+
+
+        participantRepository
+                .deleteAllByEventId(
+                        id
+                );
+
+
+        staffRepository
+                .deleteAllByEventId(
+                        id
+                );
+
+
+        repository.delete(
+                event
+        );
     }
 
 
-    // =====================================================
-    // INTERNAL
-    // =====================================================
+    /* =====================================================
+       INTERNAL
+       ===================================================== */
 
     private void applyRequest(
             Event event,
@@ -121,20 +232,26 @@ public class EventService {
     ) {
 
         event.setName(
-                request.name().trim()
+                request.name()
+                        .trim()
         );
 
+
         event.setLocation(
-                request.location().trim()
+                request.location()
+                        .trim()
         );
+
 
         event.setStartAt(
                 request.startAt()
         );
 
+
         event.setEndAt(
                 request.endAt()
         );
+
 
         event.setBackgroundImageUrl(
                 cleanNullable(
@@ -142,11 +259,13 @@ public class EventService {
                 )
         );
 
+
         event.setLogoImageUrl(
                 cleanNullable(
                         request.logoImageUrl()
                 )
         );
+
 
         event.setPublished(
                 request.published()
@@ -159,7 +278,8 @@ public class EventService {
     ) {
 
         if (
-                !request.endAt()
+                !request
+                        .endAt()
                         .isAfter(
                                 request.startAt()
                         )
@@ -181,8 +301,10 @@ public class EventService {
                 value == null ||
                 value.isBlank()
         ) {
+
             return null;
         }
+
 
         return value.trim();
     }
